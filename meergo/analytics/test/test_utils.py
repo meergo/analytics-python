@@ -4,7 +4,7 @@ import unittest
 
 from dateutil.tz import tzutc
 
-from segment.analytics import utils
+from meergo.analytics import utils
 
 
 class TestUtils(unittest.TestCase):
@@ -67,7 +67,7 @@ class TestUtils(unittest.TestCase):
             self.assertEqual(cleaned['fn'], None)
 
     def test_remove_slash(self):
-        self.assertEqual('http://segment.io',
-                         utils.remove_trailing_slash('http://segment.io/'))
-        self.assertEqual('http://segment.io',
-                         utils.remove_trailing_slash('http://segment.io'))
+        self.assertEqual('http://example.com',
+                         utils.remove_trailing_slash('http://example.com/'))
+        self.assertEqual('http://example.com',
+                         utils.remove_trailing_slash('http://example.com'))

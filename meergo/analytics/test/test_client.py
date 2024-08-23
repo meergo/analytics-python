@@ -3,8 +3,8 @@ import unittest
 import time
 import mock
 
-from segment.analytics.version import VERSION
-from segment.analytics.client import Client
+from meergo.analytics.version import VERSION
+from meergo.analytics.client import Client
 
 
 class TestClient(unittest.TestCase):
@@ -326,7 +326,7 @@ class TestClient(unittest.TestCase):
 
         # the post function should be called 2 times, with a batch size of 10
         # each time.
-        with mock.patch('segment.analytics.consumer.post', side_effect=mock_post_fn) \
+        with mock.patch('meergo.analytics.consumer.post', side_effect=mock_post_fn) \
                 as mock_post:
             for _ in range(20):
                 client.identify('userId', {'trait': 'value'})

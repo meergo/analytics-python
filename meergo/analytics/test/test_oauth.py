@@ -6,8 +6,8 @@ import mock
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../.."))
-from segment.analytics.client import Client
-import segment.analytics.oauth_manager
+from meergo.analytics.client import Client
+import meergo.analytics.oauth_manager
 import requests
 
 privatekey = '''-----BEGIN PRIVATE KEY-----
@@ -66,7 +66,7 @@ def mocked_requests_get(*args, **kwargs):
         else: # return the number of errors if set above 0
             mocked_requests_get.error_count = -1
             return MockResponse({"json_data" : {"access_token": "test_token", "expires_in": 4000}}, 200)
-    elif kwargs['url'] == 'https://api.segment.io/v1/batch':
+    elif kwargs['url'] == 'https://api.example.com/v1/b':
         return MockResponse({}, 200)
     print("Unhandled mock URL")
     return MockResponse({'text':'Unhandled mock URL error'}, 404)
@@ -75,7 +75,7 @@ mocked_requests_get.error_count = -1
 class TestOauthManager(unittest.TestCase):
     @mock.patch.object(requests.Session, 'post', side_effect=mocked_requests_get)
     def test_oauth_success(self, mock_post):
-        manager = segment.analytics.oauth_manager.OauthManager("id", privatekey, "keyid", "http://127.0.0.1:80")
+        manager = meergo.analytics.oauth_manager.OauthManager("id", privatekey, "keyid", "http://127.0.0.1:80")
         self.assertEqual(manager.get_token(), "test_token")
         self.assertEqual(manager.max_retries, 3)
         self.assertEqual(manager.scope, "tracking_api:write")
@@ -85,7 +85,7 @@ class TestOauthManager(unittest.TestCase):
 
     @mock.patch.object(requests.Session, 'post', side_effect=mocked_requests_get)
     def test_oauth_fail_unrecoverably(self, mock_post):
-        manager = segment.analytics.oauth_manager.OauthManager("id", privatekey, "keyid", "http://127.0.0.1:400")
+        manager = meergo.analytics.oauth_manager.OauthManager("id", privatekey, "keyid", "http://127.0.0.1:400")
         with self.assertRaises(Exception) as context:
             manager.get_token()
         self.assertTrue(manager.thread.is_alive)
@@ -94,7 +94,7 @@ class TestOauthManager(unittest.TestCase):
 
     @mock.patch.object(requests.Session, 'post', side_effect=mocked_requests_get)
     def test_oauth_fail_with_retries(self, mock_post):
-        manager = segment.analytics.oauth_manager.OauthManager("id", privatekey, "keyid", "http://127.0.0.1:500")
+        manager = meergo.analytics.oauth_manager.OauthManager("id", privatekey, "keyid", "http://127.0.0.1:500")
         with self.assertRaises(Exception) as context:
             manager.get_token()
         self.assertTrue(manager.thread.is_alive)
@@ -104,7 +104,7 @@ class TestOauthManager(unittest.TestCase):
     @mock.patch.object(requests.Session, 'post', side_effect=mocked_requests_get)
     @mock.patch('time.sleep', spec=time.sleep) # 429 uses sleep so it won't be interrupted
     def test_oauth_rate_limit_delay(self, mock_sleep, mock_post):
-        manager = segment.analytics.oauth_manager.OauthManager("id", privatekey, "keyid", "http://127.0.0.1:429")
+        manager = meergo.analytics.oauth_manager.OauthManager("id", privatekey, "keyid", "http://127.0.0.1:429")
         manager._poller_loop()
         self.assertTrue(mock_sleep.call_args[0][0] > 1.9 and mock_sleep.call_args[0][0] <= 2.0)
 

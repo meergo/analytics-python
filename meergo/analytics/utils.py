@@ -6,7 +6,7 @@ from decimal import Decimal
 from datetime import date, datetime
 from dateutil.tz import tzlocal, tzutc
 
-log = logging.getLogger('segment')
+log = logging.getLogger('meergo')
 
 
 def is_naive(dt):
@@ -37,10 +37,10 @@ def guess_timezone(dt):
     return dt
 
 
-def remove_trailing_slash(host):
-    if host.endswith('/'):
-        return host[:-1]
-    return host
+def remove_trailing_slash(endpoint):
+    if endpoint.endswith('/'):
+        return endpoint[:-1]
+    return endpoint
 
 
 def clean(item):

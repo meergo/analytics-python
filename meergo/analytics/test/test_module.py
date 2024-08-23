@@ -1,6 +1,6 @@
 import unittest
 
-import segment.analytics as analytics
+import meergo.analytics as analytics
 
 
 class TestModule(unittest.TestCase):
@@ -17,8 +17,8 @@ class TestModule(unittest.TestCase):
         analytics.write_key = None
         self.assertRaises(Exception, analytics.track)
 
-    def test_no_host(self):
-        analytics.host = None
+    def test_no_endpoint(self):
+        analytics.endpoint = None
         self.assertRaises(Exception, analytics.track)
 
     def test_track(self):
