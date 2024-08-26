@@ -7,20 +7,21 @@ from dateutil.tz import tzutc
 from requests.auth import HTTPBasicAuth
 from requests import sessions
 
-from segment.analytics.version import VERSION
-from segment.analytics.utils import remove_trailing_slash
+from meergo.analytics.version import VERSION
+from meergo.analytics.utils import remove_trailing_slash
 
 _session = sessions.Session()
 
+verify_ssl_requests = True
 
-def post(write_key, host=None, gzip=False, timeout=15, proxies=None, oauth_manager=None, **kwargs):
+def post(write_key, endpoint=None, gzip=False, timeout=15, proxies=None, oauth_manager=None, **kwargs):
     """Post the `kwargs` to the API"""
-    log = logging.getLogger('segment')
+    log = logging.getLogger('meergo')
     body = kwargs
     if not "sentAt" in body.keys():
         body["sentAt"] = datetime.now(tz=tzutc()).isoformat()
     body["writeKey"] = write_key
-    url = remove_trailing_slash(host or 'https://api.segment.io') + '/v1/batch'
+    url = remove_trailing_slash(endpoint or 'https://api.example.com') + '/b'
     auth = None
     if oauth_manager:
         auth = oauth_manager.get_token()
@@ -52,7 +53,7 @@ def post(write_key, host=None, gzip=False, timeout=15, proxies=None, oauth_manag
         kwargs['proxies'] = proxies
     res = None
     try:
-        res = _session.post(url, data=data, headers=headers, timeout=timeout)
+        res = _session.post(url, data=data, headers=headers, timeout=timeout, verify=verify_ssl_requests)
     except Exception as e:
         log.error(e)
         raise e
@@ -81,7 +82,7 @@ class APIError(Exception):
         self.code = code
 
     def __str__(self):
-        msg = "[Segment] {0}: {1} ({2})"
+        msg = "[Meergo] {0}: {1} ({2})"
         return msg.format(self.code, self.message, self.status)
 
 

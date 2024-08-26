@@ -6,12 +6,12 @@ import atexit
 import json
 
 from dateutil.tz import tzutc
-from segment.analytics.oauth_manager import OauthManager
+from meergo.analytics.oauth_manager import OauthManager
 
-from segment.analytics.utils import guess_timezone, clean
-from segment.analytics.consumer import Consumer, MAX_MSG_SIZE
-from segment.analytics.request import post, DatetimeSerializer
-from segment.analytics.version import VERSION
+from meergo.analytics.utils import guess_timezone, clean
+from meergo.analytics.consumer import Consumer, MAX_MSG_SIZE
+from meergo.analytics.request import post, DatetimeSerializer
+from meergo.analytics.version import VERSION
 
 import queue
 
@@ -21,7 +21,7 @@ ID_TYPES = (numbers.Number, str)
 class Client(object):
     class DefaultConfig(object):
         write_key = None
-        host = None
+        endpoint = None
         on_error = None
         debug = False
         log_handler = None
@@ -38,16 +38,16 @@ class Client(object):
         oauth_client_id = None
         oauth_client_key = None
         oauth_key_id = None
-        oauth_auth_server = 'https://oauth2.segment.io'
+        oauth_auth_server = 'https://oauth2.example.com'
         oauth_scope = 'tracking_api:write'
 
 
-    """Create a new Segment client."""
-    log = logging.getLogger('segment')
+    """Create a new Meergo client."""
+    log = logging.getLogger('meergo')
 
     def __init__(self,
                  write_key=DefaultConfig.write_key,
-                 host=DefaultConfig.host,
+                 endpoint=DefaultConfig.endpoint,
                  debug=DefaultConfig.debug,
                  max_queue_size=DefaultConfig.max_queue_size,
                  send=DefaultConfig.send,
@@ -74,7 +74,7 @@ class Client(object):
         self.debug = debug
         self.send = send
         self.sync_mode = sync_mode
-        self.host = host
+        self.endpoint = endpoint
         self.gzip = gzip
         self.timeout = timeout
         self.proxies = proxies
@@ -106,7 +106,7 @@ class Client(object):
             for _ in range(thread):
                 self.consumers = []
                 consumer = Consumer(
-                    self.queue, write_key, host=host, on_error=on_error,
+                    self.queue, write_key, endpoint=endpoint, on_error=on_error,
                     upload_size=upload_size, upload_interval=upload_interval,
                     gzip=gzip, retries=max_retries, timeout=timeout,
                     proxies=proxies, oauth_manager=self.oauth_manager,
@@ -303,7 +303,7 @@ class Client(object):
 
         if self.sync_mode:
             self.log.debug('enqueued with blocking %s.', msg['type'])
-            post(self.write_key, self.host, gzip=self.gzip,
+            post(self.write_key, self.endpoint, gzip=self.gzip,
                  timeout=self.timeout, proxies=self.proxies, 
                  oauth_manager=self.oauth_manager, batch=[msg])
 

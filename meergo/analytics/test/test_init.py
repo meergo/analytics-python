@@ -2,13 +2,13 @@ import unittest
 import pkgutil
 import logging
 import sys
-import segment.analytics as analytics
-from segment.analytics.client import Client
+import meergo.analytics as analytics
+from meergo.analytics.client import Client
 
 
 def all_names():
     for _, modname, _ in pkgutil.iter_modules(__path__):
-        yield 'segment.analytics.test.' + modname
+        yield 'meergo.analytics.test.' + modname
 
 
 def all():
@@ -43,12 +43,12 @@ class TestInit(unittest.TestCase):
         analytics.flush()
         self.assertFalse(analytics.default_client.gzip)
 
-    def test_host(self):
+    def test_endpoint(self):
         self.assertIsNone(analytics.default_client)
-        analytics.host = 'http://test-host'
+        analytics.endpoint = 'http://test-endpoint'
         analytics.flush()
-        self.assertEqual(analytics.default_client.host, 'http://test-host')
-        analytics.host = None
+        self.assertEqual(analytics.default_client.endpoint, 'http://test-endpoint')
+        analytics.endpoint = None
         analytics.default_client = None
 
     def test_max_queue_size(self):

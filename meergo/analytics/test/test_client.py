@@ -3,9 +3,14 @@ import unittest
 import time
 import mock
 
-from segment.analytics.version import VERSION
-from segment.analytics.client import Client
+import meergo.analytics.request
+meergo.analytics.request.verify_ssl_requests = False
 
+from meergo.analytics.version import VERSION
+from meergo.analytics.client import Client
+
+def createClient(write_key, **kwargs):
+    return Client(write_key, "https://127.0.0.1:8000", **kwargs)
 
 class TestClient(unittest.TestCase):
 
@@ -15,7 +20,7 @@ class TestClient(unittest.TestCase):
 
     def setUp(self):
         self.failed = False
-        self.client = Client('testsecret', on_error=self.fail)
+        self.client = createClient('testsecret', on_error=self.fail)
 
     def test_requires_write_key(self):
         self.assertRaises(AssertionError, Client)
@@ -259,7 +264,7 @@ class TestClient(unittest.TestCase):
             self.assertFalse(consumer.is_alive())
 
     def test_synchronous(self):
-        client = Client('testsecret', sync_mode=True)
+        client = createClient('testsecret', sync_mode=True)
 
         success, _ = client.identify('userId')
         self.assertFalse(client.consumers)
@@ -267,7 +272,7 @@ class TestClient(unittest.TestCase):
         self.assertTrue(success)
 
     def test_overflow(self):
-        client = Client('testsecret', max_queue_size=1)
+        client = createClient('testsecret', max_queue_size=1)
         # Ensure consumer thread is no longer uploading
         client.join()
 
@@ -279,13 +284,13 @@ class TestClient(unittest.TestCase):
         self.assertFalse(success)
 
     def test_success_on_invalid_write_key(self):
-        client = Client('bad_key', on_error=self.fail)
+        client = createClient('bad_key', on_error=self.fail)
         client.track('userId', 'event')
         client.flush()
         self.assertFalse(self.failed)
 
     def test_unicode(self):
-        Client('unicode_key')
+        createClient('unicode_key')
 
     def test_numeric_user_id(self):
         self.client.track(1234, 'python event')
@@ -293,7 +298,7 @@ class TestClient(unittest.TestCase):
         self.assertFalse(self.failed)
 
     def test_debug(self):
-        Client('bad_key', debug=True)
+        createClient('bad_key', debug=True)
         self.client.log.setLevel(0) # reset log level after debug enable
 
     def test_identify_with_date_object(self):
@@ -311,14 +316,14 @@ class TestClient(unittest.TestCase):
         self.assertEqual(msg['traits'], {'birthdate': date(1981, 2, 2)})
 
     def test_gzip(self):
-        client = Client('testsecret', on_error=self.fail, gzip=True)
+        client = createClient('testsecret', on_error=self.fail, gzip=True)
         for _ in range(10):
             client.identify('userId', {'trait': 'value'})
         client.flush()
         self.assertFalse(self.failed)
 
     def test_user_defined_upload_size(self):
-        client = Client('testsecret', on_error=self.fail,
+        client = createClient('testsecret', on_error=self.fail,
                         upload_size=10, upload_interval=3)
 
         def mock_post_fn(*args, **kwargs):
@@ -326,7 +331,7 @@ class TestClient(unittest.TestCase):
 
         # the post function should be called 2 times, with a batch size of 10
         # each time.
-        with mock.patch('segment.analytics.consumer.post', side_effect=mock_post_fn) \
+        with mock.patch('meergo.analytics.consumer.post', side_effect=mock_post_fn) \
                 as mock_post:
             for _ in range(20):
                 client.identify('userId', {'trait': 'value'})
@@ -334,16 +339,16 @@ class TestClient(unittest.TestCase):
             self.assertEqual(mock_post.call_count, 2)
 
     def test_user_defined_timeout(self):
-        client = Client('testsecret', timeout=10)
+        client = createClient('testsecret', timeout=10)
         for consumer in client.consumers:
             self.assertEqual(consumer.timeout, 10)
 
     def test_default_timeout_15(self):
-        client = Client('testsecret')
+        client = createClient('testsecret')
         for consumer in client.consumers:
             self.assertEqual(consumer.timeout, 15)
 
     def test_proxies(self):
-        client = Client('testsecret', proxies='203.243.63.16:80')
+        client = createClient('testsecret', proxies='203.243.63.16:80')
         success, msg = client.identify('userId', {'trait': 'value'})
         self.assertTrue(success)

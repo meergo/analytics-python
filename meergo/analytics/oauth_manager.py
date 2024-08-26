@@ -6,9 +6,9 @@ import uuid
 from requests import sessions
 import jwt
 
-from segment.analytics import utils
-from segment.analytics.request import APIError
-from segment.analytics.consumer import FatalError
+from meergo.analytics import utils
+from meergo.analytics.request import APIError
+from meergo.analytics.consumer import FatalError
 
 _session = sessions.Session()
 
@@ -17,7 +17,7 @@ class OauthManager(object):
                  client_id,
                  client_key,
                  key_id,
-                 auth_server='https://oauth2.segment.io',
+                 auth_server='https://oauth2.example.com',
                  scope='tracking_api:write',
                  timeout=15,
                  max_retries=3):
@@ -31,7 +31,7 @@ class OauthManager(object):
         self.retry_count = 0
         self.clock_skew = 0
         
-        self.log = logging.getLogger('segment')
+        self.log = logging.getLogger('meergo')
         self.thread = None
         self.token_mutex = threading.Lock()
         self.token = None

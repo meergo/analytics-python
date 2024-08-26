@@ -4,7 +4,7 @@ from threading import Thread
 import backoff
 import json
 
-from segment.analytics.request import post, APIError, DatetimeSerializer
+from meergo.analytics.request import post, APIError, DatetimeSerializer
 
 from queue import Empty
 
@@ -18,15 +18,15 @@ class FatalError(Exception):
     def __init__(self, message):
         self.message = message
     def __str__(self):
-        msg = "[Segment] {0})"
+        msg = "[Meergo] {0})"
         return msg.format(self.message)
 
 
 class Consumer(Thread):
     """Consumes the messages from the client's queue."""
-    log = logging.getLogger('segment')
+    log = logging.getLogger('meergo')
 
-    def __init__(self, queue, write_key, upload_size=100, host=None,
+    def __init__(self, queue, write_key, upload_size=100, endpoint=None,
                  on_error=None, upload_interval=0.5, gzip=False, retries=10,
                  timeout=15, proxies=None, oauth_manager=None):
         """Create a consumer thread."""
@@ -36,7 +36,7 @@ class Consumer(Thread):
         self.upload_size = upload_size
         self.upload_interval = upload_interval
         self.write_key = write_key
-        self.host = host
+        self.endpoint = endpoint
         self.on_error = on_error
         self.queue = queue
         self.gzip = gzip
@@ -138,7 +138,7 @@ class Consumer(Thread):
             max_tries=self.retries + 1,
             giveup=fatal_exception)
         def send_request():
-            post(self.write_key, self.host, gzip=self.gzip,
+            post(self.write_key, self.endpoint, gzip=self.gzip,
                  timeout=self.timeout, batch=batch, proxies=self.proxies,
                  oauth_manager=self.oauth_manager)
 

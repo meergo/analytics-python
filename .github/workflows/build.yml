@@ -1,0 +1,36 @@
+name: CI
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run with setup-python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Setup required modules
+        run: python -m pip install -r requirements.txt
+      - name: Install mkcert
+        run: |
+          sudo apt-get install libnss3-tools
+          wget -q https://dl.filippo.io/mkcert/latest?for=linux/amd64 -O mkcert
+          chmod +x mkcert
+          sudo cp mkcert /usr/local/bin/
+          mkcert -install
+      - name: Generate SSL certificates
+        run: |
+          mkcert 127.0.0.1
+      - name: Start Python test server with HTTPS
+        run: |
+          python meergo/analytics/test/test_server/server.py &
+        shell: bash
+      - name: Run tests
+        run: python -m unittest discover -s meergo

@@ -1,7 +1,9 @@
 import unittest
 
-import segment.analytics as analytics
+import meergo.analytics.request
+meergo.analytics.request.verify_ssl_requests = False
 
+import meergo.analytics as analytics
 
 class TestModule(unittest.TestCase):
 
@@ -10,15 +12,17 @@ class TestModule(unittest.TestCase):
 
     def setUp(self):
         self.failed = False
+        analytics.default_client = None
         analytics.write_key = 'testsecret'
+        analytics.endpoint = 'https://127.0.0.1:8000'
         analytics.on_error = self.failed
 
     def test_no_write_key(self):
         analytics.write_key = None
         self.assertRaises(Exception, analytics.track)
 
-    def test_no_host(self):
-        analytics.host = None
+    def test_no_endpoint(self):
+        analytics.endpoint = None
         self.assertRaises(Exception, analytics.track)
 
     def test_track(self):
