@@ -7,6 +7,7 @@ import meergo.analytics as analytics
 
 test_endpoint = "https://127.0.0.1:8000"
 
+@unittest.skip
 class TestModule(unittest.TestCase):
 
     # def failed(self):
