@@ -3,10 +3,13 @@ import unittest
 import json
 import requests
 
+import meergo.analytics.request
+meergo.analytics.request.verify_ssl_requests = False
+
 from meergo.analytics.request import post, DatetimeSerializer
 
+test_endpoint = 'https://127.0.0.1:8000'
 
-@unittest.skip
 class TestRequests(unittest.TestCase):
 
     def test_valid_request(self):
@@ -19,11 +22,11 @@ class TestRequests(unittest.TestCase):
 
     def test_invalid_request_error(self):
         self.assertRaises(Exception, post, 'testsecret',
-                          'https://api.example.com', False, '[{]')
+                          test_endpoint, False, '[{]')
 
     def test_invalid_endpoint(self):
         self.assertRaises(Exception, post, 'testsecret',
-                          'api.example.com/', batch=[])
+                          test_endpoint, batch=[])
 
     def test_datetime_serialization(self):
         data = {'created': datetime(2012, 3, 4, 5, 6, 7, 891011)}
@@ -38,7 +41,7 @@ class TestRequests(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_should_not_timeout(self):
-        res = post('testsecret', batch=[{
+        res = post('testsecret', endpoint=test_endpoint, batch=[{
             'userId': 'userId',
             'event': 'python event',
             'type': 'track'
@@ -47,14 +50,14 @@ class TestRequests(unittest.TestCase):
 
     def test_should_timeout(self):
         with self.assertRaises(requests.ReadTimeout):
-            post('testsecret', batch=[{
+            post('testsecret', endpoint='test_endpoint', batch=[{
                 'userId': 'userId',
                 'event': 'python event',
                 'type': 'track'
             }], timeout=0.0001)
 
     def test_proxies(self):
-        res = post('testsecret', batch=[{
+        res = post('testsecret', endpoint='test_endpoint', batch=[{
             'userId': 'userId',
             'event': 'python event',
             'type': 'track',

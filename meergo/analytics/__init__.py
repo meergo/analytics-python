@@ -88,6 +88,5 @@ def _proxy(method, *args, **kwargs):
                                 oauth_auth_server=oauth_auth_server,
                                 oauth_scope=oauth_scope,
                                 )
-    print(endpoint)
     fn = getattr(default_client, method)
     return fn(*args, **kwargs)
