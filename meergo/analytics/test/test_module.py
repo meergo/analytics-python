@@ -17,12 +17,10 @@ class TestModule(unittest.TestCase):
         analytics.endpoint = 'https://127.0.0.1:8000'
         analytics.on_error = self.failed
 
-    @unittest.skip
     def test_no_write_key(self):
         analytics.write_key = None
         self.assertRaises(Exception, analytics.track)
 
-    @unittest.skip
     def test_no_endpoint(self):
         analytics.endpoint = None
         self.assertRaises(Exception, analytics.track)
