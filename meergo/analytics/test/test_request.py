@@ -13,7 +13,7 @@ test_endpoint = 'https://127.0.0.1:8000'
 class TestRequests(unittest.TestCase):
 
     def test_valid_request(self):
-        res = post('testsecret', batch=[{
+        res = post('testsecret', endpoint=test_endpoint, batch=[{
             'userId': 'userId',
             'event': 'python event',
             'type': 'track'
@@ -22,11 +22,11 @@ class TestRequests(unittest.TestCase):
 
     def test_invalid_request_error(self):
         self.assertRaises(Exception, post, 'testsecret',
-                          test_endpoint, False, '[{]')
+                         False, '[{]', endpoint=test_endpoint)
 
     def test_invalid_endpoint(self):
         self.assertRaises(Exception, post, 'testsecret',
-                          test_endpoint, batch=[])
+                          endpoint=test_endpoint, batch=[])
 
     def test_datetime_serialization(self):
         data = {'created': datetime(2012, 3, 4, 5, 6, 7, 891011)}
@@ -50,14 +50,14 @@ class TestRequests(unittest.TestCase):
 
     def test_should_timeout(self):
         with self.assertRaises(requests.ReadTimeout):
-            post('testsecret', endpoint='test_endpoint', batch=[{
+            post('testsecret', endpoint=test_endpoint, batch=[{
                 'userId': 'userId',
                 'event': 'python event',
                 'type': 'track'
             }], timeout=0.0001)
 
     def test_proxies(self):
-        res = post('testsecret', endpoint='test_endpoint', batch=[{
+        res = post('testsecret', endpoint=test_endpoint, batch=[{
             'userId': 'userId',
             'event': 'python event',
             'type': 'track',
