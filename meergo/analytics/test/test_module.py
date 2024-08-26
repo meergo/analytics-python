@@ -5,8 +5,6 @@ meergo.analytics.request.verify_ssl_requests = False
 
 import meergo.analytics as analytics
 
-test_endpoint='https://127.0.0.1:8000'
-
 class TestModule(unittest.TestCase):
 
     # def failed(self):
@@ -15,6 +13,7 @@ class TestModule(unittest.TestCase):
     def setUp(self):
         self.failed = False
         analytics.write_key = 'testsecret'
+        analytics.endpoint = 'https://127.0.0.1:8000'
         analytics.on_error = self.failed
 
     @unittest.skip
@@ -28,27 +27,27 @@ class TestModule(unittest.TestCase):
         self.assertRaises(Exception, analytics.track)
 
     def test_track(self):
-        analytics.track('userId', 'python module event', endpoint=test_endpoint)
+        analytics.track('userId', 'python module event')
         analytics.flush()
 
     def test_identify(self):
-        analytics.identify('userId', {'email': 'user@email.com'}, endpoint=test_endpoint)
+        analytics.identify('userId', {'email': 'user@email.com'})
         analytics.flush()
 
     def test_group(self):
-        analytics.group('userId', 'groupId', endpoint=test_endpoint)
+        analytics.group('userId', 'groupId')
         analytics.flush()
 
     def test_alias(self):
-        analytics.alias('previousId', 'userId', endpoint=test_endpoint)
+        analytics.alias('previousId', 'userId')
         analytics.flush()
 
     def test_page(self):
-        analytics.page('userId', endpoint=test_endpoint)
+        analytics.page('userId')
         analytics.flush()
 
     def test_screen(self):
-        analytics.screen('userId', endpoint=test_endpoint)
+        analytics.screen('userId')
         analytics.flush()
 
     def test_flush(self):
