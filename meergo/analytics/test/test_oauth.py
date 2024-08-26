@@ -9,6 +9,8 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../
 from meergo.analytics.client import Client
 import meergo.analytics.oauth_manager
 import requests
+import meergo.analytics.request
+meergo.analytics.request.verify_ssl_requests = False
 
 privatekey = '''-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDVll7uJaH322IN
@@ -38,6 +40,9 @@ sKPfP9LVRnY+l1BWLEilvB+xBzqMwh2YWkIlWI6PMQKBgGi6TBnxp81lOYrxVRDj
 l9q+amhtkwD/6fbkAu/xoWNl+11IFoxd88y2ByBFoEKB6UVLuCTSKwXDqzEZet7x
 mDyRxq7ohIzLkw8b8buDeuXZ
 -----END PRIVATE KEY-----'''
+
+def createClient(write_key, **kwargs):
+    return Client(write_key, "https://127.0.0.1:8000", **kwargs)
 
 def mocked_requests_get(*args, **kwargs):
     class MockResponse:
@@ -119,7 +124,7 @@ class TestOauthIntegration(unittest.TestCase):
 
     @mock.patch.object(requests.Session, 'post', side_effect=mocked_requests_get)
     def test_oauth_integration_success(self, mock_post):
-        client = Client("write_key", on_error=self.fail, oauth_auth_server="http://127.0.0.1:80",
+        client = createClient("write_key", on_error=self.fail, oauth_auth_server="http://127.0.0.1:80",
                         oauth_client_id="id",oauth_client_key=privatekey, oauth_key_id="keyid")
         client.track("user", "event")
         client.flush()
@@ -128,7 +133,7 @@ class TestOauthIntegration(unittest.TestCase):
 
     @mock.patch.object(requests.Session, 'post', side_effect=mocked_requests_get)
     def test_oauth_integration_failure(self, mock_post):
-        client = Client("write_key", on_error=self.fail, oauth_auth_server="http://127.0.0.1:400",
+        client = createClient("write_key", on_error=self.fail, oauth_auth_server="http://127.0.0.1:400",
                         oauth_client_id="id",oauth_client_key=privatekey, oauth_key_id="keyid")
         client.track("user", "event")
         client.flush()
@@ -138,7 +143,7 @@ class TestOauthIntegration(unittest.TestCase):
     @mock.patch.object(requests.Session, 'post', side_effect=mocked_requests_get)
     def test_oauth_integration_recovery(self, mock_post):
         mocked_requests_get.error_count = 2 # 2 errors and then success
-        client = Client("write_key", on_error=self.fail, oauth_auth_server="http://127.0.0.1:501",
+        client = createClient("write_key", on_error=self.fail, oauth_auth_server="http://127.0.0.1:501",
                         oauth_client_id="id",oauth_client_key=privatekey, oauth_key_id="keyid")
         client.track("user", "event")
         client.flush()
@@ -147,7 +152,7 @@ class TestOauthIntegration(unittest.TestCase):
 
     @mock.patch.object(requests.Session, 'post', side_effect=mocked_requests_get)
     def test_oauth_integration_fail_bad_key(self, mock_post):
-        client = Client("write_key", on_error=self.fail, oauth_auth_server="http://127.0.0.1:80",
+        client = createClient("write_key", on_error=self.fail, oauth_auth_server="http://127.0.0.1:80",
                         oauth_client_id="id",oauth_client_key="badkey", oauth_key_id="keyid")
         client.track("user", "event")
         client.flush()
