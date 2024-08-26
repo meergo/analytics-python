@@ -3,6 +3,9 @@ import mock
 import time
 import json
 
+import meergo.analytics.request
+meergo.analytics.request.verify_ssl_requests = False
+
 try:
     from queue import Queue
 except ImportError:
@@ -11,12 +14,14 @@ except ImportError:
 from meergo.analytics.consumer import Consumer, MAX_MSG_SIZE
 from meergo.analytics.request import APIError
 
+def createConsumer(queue, write_key, **kwargs):
+    return Consumer(queue, write_key, endpoint="https://127.0.0.1:8000", **kwargs)
 
 class TestConsumer(unittest.TestCase):
 
     def test_next(self):
         q = Queue()
-        consumer = Consumer(q, '')
+        consumer = createConsumer(q, '')
         q.put(1)
         next = consumer.next()
         self.assertEqual(next, [1])
@@ -24,7 +29,7 @@ class TestConsumer(unittest.TestCase):
     def test_next_limit(self):
         q = Queue()
         upload_size = 50
-        consumer = Consumer(q, '', upload_size)
+        consumer = createConsumer(q, '', upload_size=50)
         for i in range(10000):
             q.put(i)
         next = consumer.next()
@@ -32,7 +37,7 @@ class TestConsumer(unittest.TestCase):
 
     def test_dropping_oversize_msg(self):
         q = Queue()
-        consumer = Consumer(q, '')
+        consumer = createConsumer(q, '')
         oversize_msg = {'m': 'x' * MAX_MSG_SIZE}
         q.put(oversize_msg)
         next = consumer.next()
@@ -41,7 +46,7 @@ class TestConsumer(unittest.TestCase):
 
     def test_upload(self):
         q = Queue()
-        consumer = Consumer(q, 'testsecret')
+        consumer = createConsumer(q, 'testsecret')
         track = {
             'type': 'track',
             'event': 'python event',
@@ -57,7 +62,7 @@ class TestConsumer(unittest.TestCase):
         # The consumer should upload _n_ times.
         q = Queue()
         upload_interval = 0.3
-        consumer = Consumer(q, 'testsecret', upload_size=10,
+        consumer = createConsumer(q, 'testsecret', upload_size=10,
                             upload_interval=upload_interval)
         with mock.patch('meergo.analytics.consumer.post') as mock_post:
             consumer.start()
@@ -77,7 +82,7 @@ class TestConsumer(unittest.TestCase):
         q = Queue()
         upload_interval = 0.5
         upload_size = 10
-        consumer = Consumer(q, 'testsecret', upload_size=upload_size,
+        consumer = createConsumer(q, 'testsecret', upload_size=upload_size,
                             upload_interval=upload_interval)
         with mock.patch('meergo.analytics.consumer.post') as mock_post:
             consumer.start()
@@ -93,7 +98,7 @@ class TestConsumer(unittest.TestCase):
 
     @classmethod
     def test_request(cls):
-        consumer = Consumer(None, 'testsecret')
+        consumer = createConsumer(None, 'testsecret')
         track = {
             'type': 'track',
             'event': 'python event',
@@ -136,21 +141,21 @@ class TestConsumer(unittest.TestCase):
 
     def test_request_retry(self):
         # we should retry on general errors
-        consumer = Consumer(None, 'testsecret')
+        consumer = createConsumer(None, 'testsecret')
         self._test_request_retry(consumer, Exception('generic exception'), 2)
 
         # we should retry on server errors
-        consumer = Consumer(None, 'testsecret')
+        consumer = createConsumer(None, 'testsecret')
         self._test_request_retry(consumer, APIError(
             500, 'code', 'Internal Server Error'), 2)
 
         # we should retry on HTTP 429 errors
-        consumer = Consumer(None, 'testsecret')
+        consumer = createConsumer(None, 'testsecret')
         self._test_request_retry(consumer, APIError(
             429, 'code', 'Too Many Requests'), 2)
 
         # we should NOT retry on other client errors
-        consumer = Consumer(None, 'testsecret')
+        consumer = createConsumer(None, 'testsecret')
         api_error = APIError(400, 'code', 'Client Errors')
         try:
             self._test_request_retry(consumer, api_error, 1)
@@ -160,18 +165,18 @@ class TestConsumer(unittest.TestCase):
             self.fail('request() should not retry on client errors')
 
         # test for number of exceptions raise > retries value
-        consumer = Consumer(None, 'testsecret', retries=3)
+        consumer = createConsumer(None, 'testsecret', retries=3)
         self._test_request_retry(consumer, APIError(
             500, 'code', 'Internal Server Error'), 3)
 
     def test_pause(self):
-        consumer = Consumer(None, 'testsecret')
+        consumer = createConsumer(None, 'testsecret')
         consumer.pause()
         self.assertFalse(consumer.running)
 
     def test_max_batch_size(self):
         q = Queue()
-        consumer = Consumer(
+        consumer = createConsumer(
             q, 'testsecret', upload_size=100000, upload_interval=3)
         track = {
             'type': 'track',
@@ -200,7 +205,7 @@ class TestConsumer(unittest.TestCase):
 
     @classmethod
     def test_proxies(cls):
-        consumer = Consumer(None, 'testsecret', proxies='203.243.63.16:80')
+        consumer = createConsumer(None, 'testsecret', proxies='203.243.63.16:80')
         track = {
             'type': 'track',
             'event': 'python event',

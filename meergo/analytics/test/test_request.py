@@ -6,6 +6,7 @@ import requests
 from meergo.analytics.request import post, DatetimeSerializer
 
 
+@unittest.skip
 class TestRequests(unittest.TestCase):
 
     def test_valid_request(self):

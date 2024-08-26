@@ -15,7 +15,6 @@ def all():
     logging.basicConfig(stream=sys.stderr)
     return unittest.defaultTestLoader.loadTestsFromNames(all_names())
 
-
 class TestInit(unittest.TestCase):
     def test_writeKey(self):
         self.assertIsNone(analytics.default_client)

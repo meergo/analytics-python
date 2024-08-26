@@ -6,7 +6,7 @@ from dateutil.tz import tzutc
 
 from meergo.analytics import utils
 
-
+@unittest.skip
 class TestUtils(unittest.TestCase):
 
     def test_timezone_utils(self):

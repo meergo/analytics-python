@@ -12,6 +12,7 @@ from meergo.analytics.utils import remove_trailing_slash
 
 _session = sessions.Session()
 
+verify_ssl_requests = True
 
 def post(write_key, endpoint=None, gzip=False, timeout=15, proxies=None, oauth_manager=None, **kwargs):
     """Post the `kwargs` to the API"""
@@ -52,7 +53,7 @@ def post(write_key, endpoint=None, gzip=False, timeout=15, proxies=None, oauth_m
         kwargs['proxies'] = proxies
     res = None
     try:
-        res = _session.post(url, data=data, headers=headers, timeout=timeout)
+        res = _session.post(url, data=data, headers=headers, timeout=timeout, verify=verify_ssl_requests)
     except Exception as e:
         log.error(e)
         raise e
