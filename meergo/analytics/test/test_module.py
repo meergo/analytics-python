@@ -5,6 +5,8 @@ meergo.analytics.request.verify_ssl_requests = False
 
 import meergo.analytics as analytics
 
+test_endpoint='https://127.0.0.1:8000'
+
 class TestModule(unittest.TestCase):
 
     # def failed(self):
@@ -13,39 +15,40 @@ class TestModule(unittest.TestCase):
     def setUp(self):
         self.failed = False
         analytics.write_key = 'testsecret'
-        analytics.endpoint = 'https://127.0.0.1:8000'
         analytics.on_error = self.failed
 
+    @unittest.skip
     def test_no_write_key(self):
         analytics.write_key = None
         self.assertRaises(Exception, analytics.track)
 
-    @unittest.skip("Currently the default endpoint is just a placeholder and cannot be fetched")
+    @unittest.skip
     def test_no_endpoint(self):
+        analytics.endpoint = None
         self.assertRaises(Exception, analytics.track)
 
     def test_track(self):
-        analytics.track('userId', 'python module event')
+        analytics.track('userId', 'python module event', endpoint=test_endpoint)
         analytics.flush()
 
     def test_identify(self):
-        analytics.identify('userId', {'email': 'user@email.com'})
+        analytics.identify('userId', {'email': 'user@email.com'}, endpoint=test_endpoint)
         analytics.flush()
 
     def test_group(self):
-        analytics.group('userId', 'groupId')
+        analytics.group('userId', 'groupId', endpoint=test_endpoint)
         analytics.flush()
 
     def test_alias(self):
-        analytics.alias('previousId', 'userId')
+        analytics.alias('previousId', 'userId', endpoint=test_endpoint)
         analytics.flush()
 
     def test_page(self):
-        analytics.page('userId')
+        analytics.page('userId', endpoint=test_endpoint)
         analytics.flush()
 
     def test_screen(self):
-        analytics.screen('userId')
+        analytics.screen('userId', endpoint=test_endpoint)
         analytics.flush()
 
     def test_flush(self):
