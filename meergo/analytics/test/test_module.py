@@ -5,7 +5,6 @@ meergo.analytics.request.verify_ssl_requests = False
 
 import meergo.analytics as analytics
 
-@unittest.skip
 class TestModule(unittest.TestCase):
 
     # def failed(self):
@@ -28,28 +27,35 @@ class TestModule(unittest.TestCase):
         self.assertRaises(Exception, analytics.track)
 
     def test_track(self):
+        analytics.endpoint = 'https://127.0.0.1:8000'
         analytics.track('userId', 'python module event')
         analytics.flush()
 
     def test_identify(self):
+        analytics.endpoint = 'https://127.0.0.1:8000'
         analytics.identify('userId', {'email': 'user@email.com'})
         analytics.flush()
 
     def test_group(self):
+        analytics.endpoint = 'https://127.0.0.1:8000'
         analytics.group('userId', 'groupId')
         analytics.flush()
 
     def test_alias(self):
+        analytics.endpoint = 'https://127.0.0.1:8000'
         analytics.alias('previousId', 'userId')
         analytics.flush()
 
     def test_page(self):
+        analytics.endpoint = 'https://127.0.0.1:8000'
         analytics.page('userId')
         analytics.flush()
 
     def test_screen(self):
+        analytics.endpoint = 'https://127.0.0.1:8000'
         analytics.screen('userId')
         analytics.flush()
 
     def test_flush(self):
+        analytics.endpoint = 'https://127.0.0.1:8000'
         analytics.flush()
