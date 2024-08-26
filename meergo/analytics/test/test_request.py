@@ -25,8 +25,8 @@ class TestRequests(unittest.TestCase):
                          False, '[{]', endpoint=test_endpoint)
 
     def test_invalid_endpoint(self):
-        self.assertRaises(Exception, post, 'testsecret',
-                          endpoint=test_endpoint, batch=[])
+        self.assertRaises(Exception, post, 'testsecret', 
+                          'api.example.com/', batch=[])
 
     def test_datetime_serialization(self):
         data = {'created': datetime(2012, 3, 4, 5, 6, 7, 891011)}
