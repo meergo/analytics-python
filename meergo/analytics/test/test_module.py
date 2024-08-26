@@ -5,7 +5,6 @@ meergo.analytics.request.verify_ssl_requests = False
 
 import meergo.analytics as analytics
 
-@unittest.skip
 class TestModule(unittest.TestCase):
 
     # def failed(self):
