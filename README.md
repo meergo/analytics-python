@@ -25,6 +25,20 @@ analytics.track('er56789012', 'Product added to cart', {
 
 Refer to the Meergo events documentation for more information on the supported event types.
 
+## How to test the SDK
+
+1. Start the testing server with:
+
+  ```
+  python meergo/analytics/test/test_server/server.py
+  ```
+
+2. Launch the tests with:
+  
+  ```
+  pytest . -v
+  ```
+
 ## License
 
 ```
