@@ -21,7 +21,7 @@ def post(write_key, endpoint=None, gzip=False, timeout=15, proxies=None, oauth_m
     if not "sentAt" in body.keys():
         body["sentAt"] = datetime.now(tz=tzutc()).isoformat()
     body["writeKey"] = write_key
-    url = remove_trailing_slash(endpoint or 'https://api.example.com') + '/b'
+    url = remove_trailing_slash(endpoint or 'https://api.example.com')
     auth = None
     if oauth_manager:
         auth = oauth_manager.get_token()
@@ -29,7 +29,8 @@ def post(write_key, endpoint=None, gzip=False, timeout=15, proxies=None, oauth_m
     log.debug('making request: %s', data)
     headers = {
         'Content-Type': 'application/json',
-        'User-Agent': 'analytics-python/' + VERSION
+        'User-Agent': 'analytics-python/' + VERSION,
+        'Authorization': 'Bearer ' + write_key,
     }
     if auth:
         headers['Authorization'] = 'Bearer {}'.format(auth)

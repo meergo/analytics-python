@@ -71,7 +71,7 @@ def mocked_requests_get(*args, **kwargs):
         else: # return the number of errors if set above 0
             mocked_requests_get.error_count = -1
             return MockResponse({"json_data" : {"access_token": "test_token", "expires_in": 4000}}, 200)
-    elif kwargs['url'] == 'https://api.example.com/v1/b':
+    elif kwargs['url'] == 'https://api.example.com/v1/events':
         return MockResponse({}, 200)
     print("Unhandled mock URL")
     return MockResponse({'text':'Unhandled mock URL error'}, 404)
