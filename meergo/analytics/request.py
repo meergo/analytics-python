@@ -21,19 +21,19 @@ def post(write_key, endpoint=None, gzip=False, timeout=15, proxies=None, oauth_m
     if not "sentAt" in body.keys():
         body["sentAt"] = datetime.now(tz=tzutc()).isoformat()
     body["writeKey"] = write_key
-    url = remove_trailing_slash(endpoint or 'https://api.example.com')
+    endpoint = endpoint or 'https://api.example.com/v1/events'
     auth = None
     if oauth_manager:
         auth = oauth_manager.get_token()
+    else:
+        auth = write_key
     data = json.dumps(body, cls=DatetimeSerializer)
     log.debug('making request: %s', data)
     headers = {
         'Content-Type': 'application/json',
         'User-Agent': 'analytics-python/' + VERSION,
-        'Authorization': 'Bearer ' + write_key,
+        'Authorization': f'Bearer {auth}',
     }
-    if auth:
-        headers['Authorization'] = 'Bearer {}'.format(auth)
 
     if gzip:
         headers['Content-Encoding'] = 'gzip'
@@ -54,7 +54,7 @@ def post(write_key, endpoint=None, gzip=False, timeout=15, proxies=None, oauth_m
         kwargs['proxies'] = proxies
     res = None
     try:
-        res = _session.post(url, data=data, headers=headers, timeout=timeout, verify=verify_ssl_requests)
+        res = _session.post(endpoint, data=data, headers=headers, timeout=timeout, verify=verify_ssl_requests)
     except Exception as e:
         log.error(e)
         raise e
