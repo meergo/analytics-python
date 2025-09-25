@@ -4,16 +4,40 @@ This file contains information useful to Meergo Python SDK developers.
 
 ## How to test the SDK
 
-1. Start the testing server with:
+1. Create the venv:
 
   ```
-  python meergo/analytics/test/test_server/server.py
+  python3 -m venv .venv
   ```
 
-2. Launch the tests with:
+2. Activate the venv:
+
+  ```
+  source .venv/bin/activate
+  ```
+
+3. Install the dependencies from `requirements.txt`:
+
+  ```
+  python3 -m pip install -r ./requirements.txt
+  ```
+
+4. Start the testing server with:
+
+  ```
+  python3 meergo/analytics/test/test_server/server.py
+  ```
+
+5. **In another shell**, activate the venv:
   
   ```
-  pytest . -v
+  source .venv/bin/activate
+  ```
+
+6. Run the tests:
+
+  ```
+  python3 -m pytest -v .
   ```
 
 ## How to publish the Meergo Python SDK on PyPI
