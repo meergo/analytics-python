@@ -76,8 +76,6 @@ python3 -m build --wheel
 
 Upload the Wheel to PyPI:
 
-> For detailed information, see https://packaging.python.org/en/latest/guides/distributing-packages-using-setuptools/#upload-your-distributions.
-
 ```bash
 twine upload dist/*
 ```
