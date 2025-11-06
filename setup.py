@@ -9,6 +9,8 @@ except ImportError:
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "meergo", "analytics"))
 from version import VERSION
 
+description = "Python SDK for Meergo"
+
 long_description = """
 This is the Python SDK for sending events to Meergo (https://meergo.com).
 
@@ -35,6 +37,7 @@ setup(
     python_requires=">=3.10.0",
     license="MIT License",
     install_requires=install_requires,
+    description=description,
     long_description=long_description,
     extras_require={"test": tests_require},
 )
