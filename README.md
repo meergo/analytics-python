@@ -2,16 +2,17 @@
 
 The Meergo Python SDK lets you send customer event data from your Python applications to your specified destinations.
 
-> [!NOTE]
-> Are you a developer of the Meergo Python SDK, or want to extend it? You are probably interested to the [DEVELOPERS.md](DEVELOPERS.md) file.
+## Install the Meergo SDK
 
-## SDK setup requirements
-
-- Set up a Meergo account.
-- Set up a Python source in the dashboard.
-- Copy the write key and the endpoint.
+```bash
+pip install git+https://github.com/meergo/analytics-python
+```
 
 ## Using the SDK
+
+💡 We recommend referring to the [Meergo documentation](https://meergo.com) for information on using this SDK.
+
+It's more comprehensive and provides a general overview as well as a step-by-step guide on how to use this SDK.
 
 ```python
 import meergo.analytics as analytics
@@ -23,10 +24,6 @@ analytics.track('er56789012', 'Product added to cart', {
     'price': 32.50
 })
 ```
-
-## Sending events
-
-Refer to the Meergo events documentation for more information on the supported event types.
 
 ## License
 

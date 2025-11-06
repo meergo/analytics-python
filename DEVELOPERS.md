@@ -40,7 +40,9 @@ This file contains information useful to Meergo Python SDK developers.
   python3 -m pytest -v .
   ```
 
-## How to publish the Meergo Python SDK on PyPI
+## Publishing on PyPi (no more relevant)
+
+> ✋🏻🛑⛔️ We've decided **not to publish the Python SDK on PyPi**, as it makes code management and releases much easier to do directly referring GitHub from Pip (see the installation section on README). Therefore, this section is currently being kept in case of future needs, but is no longer being used.
 
 ### Necessary knowledge
 
