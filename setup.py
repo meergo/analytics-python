@@ -33,6 +33,7 @@ tests_require = [
 setup(
     name="meergo-analytics-python",
     version=VERSION,
+    url="https://github.com/meergo/analytics-python",
     packages=["meergo.analytics", "meergo.analytics.test"],
     python_requires=">=3.10.0",
     license="MIT License",
