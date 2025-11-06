@@ -26,7 +26,7 @@ setup(
     name="meergo-analytics-python",
     version=VERSION,
     packages=["meergo.analytics", "meergo.analytics.test"],
-    python_requires=">=3.9.0",
+    python_requires=">=3.10.0",
     license="MIT License",
     install_requires=install_requires,
     extras_require={"test": tests_require},
