@@ -2,6 +2,15 @@
 
 This file contains information useful to Meergo Python SDK developers.
 
+## Releasing a new version
+
+For new releases, we simply rely on GitHub and git tags (much like Go). We don't publish anything on PyPi.
+
+So:
+
+1. Update the version references in the repository and commit
+2. Release a new version on GitHub
+
 ## How to test the SDK
 
 1. Create the venv:
