@@ -25,6 +25,12 @@ analytics.track('er56789012', 'Product added to cart', {
 })
 ```
 
+## Report an issue
+
+To file an issue about the Python SDK for Meergo, please refer to the issues in the main Meergo repository:
+
+[🐞 https://github.com/meergo/meergo/issues?q=is%3Aissue%20state%3Aopen%20label%3Apython-sdk](https://github.com/meergo/meergo/issues?q=is%3Aissue%20state%3Aopen%20label%3Apython-sdk)
+
 ## License
 
 ```
