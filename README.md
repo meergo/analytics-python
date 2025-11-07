@@ -5,7 +5,7 @@ The Meergo Python SDK lets you send customer event data from your Python applica
 ## Install the Meergo SDK
 
 ```bash
-pip install git+https://github.com/meergo/analytics-python
+pip3 install git+https://github.com/meergo/analytics-python
 ```
 
 ## Using the SDK
